@@ -5,6 +5,7 @@ from scematk.io import read_zarr_ubimg, tiff_to_zarr
 from time import time
 import os
 
+
 def convert_tiff_to_zarr(args: Namespace, logger: Logger, paths: dict, benchmarks: dict) -> None:
     logger.info("STARTED: Converting TIFF to zarr")
     img_dir = paths["img"]
@@ -13,7 +14,13 @@ def convert_tiff_to_zarr(args: Namespace, logger: Logger, paths: dict, benchmark
     out_meta = os.path.join(out_dir, "meta.json")
     start_time = time()
     try:
-        tiff_to_zarr(img_dir, out_zarr, out_meta, tile_size = args.convert_tile_size, chunk_size = args.convert_chunk_size)
+        tiff_to_zarr(
+            img_dir,
+            out_zarr,
+            out_meta,
+            tile_size=args.convert_tile_size,
+            chunk_size=args.convert_chunk_size,
+        )
     except Exception as e:
         logger.error(f"ERROR: Image could not be converted to zarr with error:\n{e}")
         raise RuntimeError()

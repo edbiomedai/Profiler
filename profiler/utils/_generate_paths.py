@@ -2,6 +2,7 @@ from argparse import Namespace
 from logging import Logger
 import os
 
+
 def generate_paths(args: Namespace, logger: Logger) -> dict:
     logger.info("STARTED: Creating image paths")
     cwd = os.getcwd()
@@ -15,7 +16,7 @@ def generate_paths(args: Namespace, logger: Logger) -> dict:
         "mask_cell": os.path.join(cwd, "imgs", "mask_cell", args.image),
         "mask_cyto": os.path.join(cwd, "imgs", "mask_cyto", args.image),
         "data": os.path.join(cwd, "data", args.image),
-        "data_staged": os.path.join(cwd, "data", "staged", args.image)
+        "data_staged": os.path.join(cwd, "data", "staged", args.image),
     }
     for path in paths.values():
         os.mkdir(path)
