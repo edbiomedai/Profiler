@@ -5,7 +5,7 @@ from .utils._generate_paths import generate_paths
 from .utils._logger import get_logger
 from time import time
 
-if __name__=='__main__':
+def main() -> None:
     start_time = time()
     args = get_cli_args()
     logger = get_logger(args)
@@ -14,4 +14,7 @@ if __name__=='__main__':
     benchmarks = {}
     convert_tiff_to_zarr(args, logger, paths, benchmarks)
     extract_image_metadata(args, logger, paths, metadata)
+
+if __name__=='__main__':
+    main()
     
