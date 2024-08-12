@@ -7,7 +7,6 @@ def prep_norm_target(args: Namespace) -> None:
     out_dir = os.path.join(cwd, "norm_target")
     out_zarr = os.path.join(out_dir, "img.zarr")
     out_meta = os.path.join(out_dir, "meta.json")
-    tiff_to_zarr(args.norm_target, out_zarr, out_meta)
     try:
         tiff_to_zarr(
             args.norm_target,
