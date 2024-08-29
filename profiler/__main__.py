@@ -40,9 +40,6 @@ def main() -> None:
     profile_areashape(args, logger, paths, benchmarks)
     profile_intensity(args, logger, paths, benchmarks)
     rmtree(paths["img_deconv"])
-    rmtree(paths["mask_nuc"])
-    rmtree(paths["mask_cell"])
-    rmtree(paths["mask_cyto"])
 
 if __name__ == "__main__":
     main()
