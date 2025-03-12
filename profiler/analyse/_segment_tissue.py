@@ -1,15 +1,38 @@
 from argparse import Namespace
+import dask.array as da
 from logging import Logger
 import numpy as np
 import os
 from PIL import Image
+from scematk.image import BinaryMask
+from scematk.image._image import Image as SCEMATKImage
 from scematk.io import read_zarr_ubimg
 from scematk.process import Processor
+from scematk.process._process import Process
 from scematk.process.colour import RGBToGrey
 from scematk.process.contrast import GammaContrast
 from scematk.process.morphology import BinaryClosing, BinaryOpening
 from scematk.segment.tissue import OtsuThresholder
 from time import time
+
+class Downsample(Process):
+    def __init__(self):
+        super().__init__("downsampler")
+    
+    def run(self, image: SCEMATKImage) -> SCEMATKImage:
+        img = image.image
+        downsampled_image = da.coarsen(da.mean, img, {0:32, 1:32}) > 0.5
+        return BinaryMask(downsampled_image.rechunk((4096, 4096)), image.info, ["Tissue"])
+    
+class Upsample(Process):
+    def __init__(self):
+        super().__init__("upsampler")
+    
+    def run(self, image: SCEMATKImage) -> SCEMATKImage:
+        img = image.image
+        upsampled_image_intermediate = da.repeat(img, 32, axis=0)
+        upsampled_image = da.repeat(upsampled_image_intermediate, 32, axis=1)
+        return BinaryMask(upsampled_image.rechunk((4096, 4096)), image.info, ["Tissue"])
 
 def segment_tissue(args: Namespace, logger: Logger, paths: dict, benchmarks: dict) -> None:
     logger.info("STARTED: Segmenting tissue")
@@ -21,7 +44,7 @@ def segment_tissue(args: Namespace, logger: Logger, paths: dict, benchmarks: dic
     out_meta = os.path.join(out_dir, "meta.json")
     raw_image = read_zarr_ubimg(norm_zarr, norm_meta)
     preproc = Processor([RGBToGrey(), GammaContrast(5)])
-    postproc = Processor([BinaryClosing(2), BinaryOpening(2)])
+    postproc = Processor([Downsample(), BinaryClosing(2), BinaryOpening(2), Upsample()])
     start_time = time()
     otsu_thresholder = OtsuThresholder(preprocessor = preproc, postprocessor = postproc)
     otsu_thresholder.fit(raw_image)
