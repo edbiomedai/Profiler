@@ -23,6 +23,7 @@ POPULATE_DIRS = [
     os.path.join("imgs", "mask_nuc"),
     os.path.join("imgs", "mask_cell"),
     os.path.join("imgs", "mask_cyto"),
+    os.path.join("imgs", "mask_qc"),
     'norm_target'
 ]   
 

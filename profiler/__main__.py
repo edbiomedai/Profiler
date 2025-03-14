@@ -1,8 +1,10 @@
 from .analyse._convert_tiff_to_zarr import convert_tiff_to_zarr
+from .analyse._create_qc_mask import create_qc_mask
 from .analyse._deconvolve_image import deconvolve_image
 from .analyse._extract_image_metadata import extract_image_metadata
 from .analyse._segment_nuclei import segment_nuclei
 from .analyse._extract_tissue_metadata import extract_tissue_metadata
+from .analyse._merge_data import merge_data
 from .analyse._profile_areashape import profile_areashape
 from .analyse._profile_intensity import profile_intensity
 from .analyse._segment_cells import segment_cells
@@ -13,6 +15,9 @@ from .analyse._process_nuc_mask import process_nuc_mask
 from .utils._argument_parser import get_cli_args
 from .utils._generate_paths import generate_paths
 from .utils._logger import get_logger
+import json
+import os
+import pandas as pd
 from shutil import rmtree
 from time import time
 
@@ -24,6 +29,7 @@ def main() -> None:
     paths = generate_paths(args, logger)
     metadata = {}
     benchmarks = {}
+    benchmarks["image_name"] = os.path.basename(args.image)
     convert_tiff_to_zarr(args, logger, paths, benchmarks)
     extract_image_metadata(args, logger, paths, metadata)
     normalise_image(args, logger, paths, benchmarks)
@@ -40,6 +46,22 @@ def main() -> None:
     profile_areashape(args, logger, paths, benchmarks)
     profile_intensity(args, logger, paths, benchmarks)
     rmtree(paths["img_deconv"])
+    rmtree(paths["mask_cell"])
+    rmtree(paths["mask_cyto"])
+    rmtree(paths["mask_nuc"])
+    create_qc_mask(args, logger, paths, benchmarks)
+    rmtree(paths["mask_tissue"])
+    
+    merge_data(args, logger, paths, benchmarks)
+    rmtree(paths["data_staged"])
+    
+    end_time = time()
+    elapsed_time = end_time - start_time
+    benchmarks["whole_workflow"] = elapsed_time
+    benchmarks_out_dir = os.path.join(paths["benchmarks"], os.path.basename(args.image) + ".csv")
+    pd.DataFrame(benchmarks).to_csv(benchmarks_out_dir, index=False)
+    metadata_out_dir = os.path.join(paths["metadata"], os.path.basename(args.image) + ".csv")
+    pd.DataFrame(metadata).to_csv(metadata_out_dir, index=False)
 
 if __name__ == "__main__":
     main()

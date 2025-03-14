@@ -15,6 +15,7 @@ def generate_paths(args: Namespace, logger: Logger) -> dict:
         "mask_nuc": os.path.join(cwd, "imgs", "mask_nuc", args.image),
         "mask_cell": os.path.join(cwd, "imgs", "mask_cell", args.image),
         "mask_cyto": os.path.join(cwd, "imgs", "mask_cyto", args.image),
+        "mask_qc": os.path.join(cwd, "imgs", "mask_qc", args.image),
         "data": os.path.join(cwd, "data", args.image),
         "data_staged": os.path.join(cwd, "data", "staged", args.image),
     }
