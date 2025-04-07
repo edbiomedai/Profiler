@@ -4,6 +4,7 @@ from argparse import ArgumentParser, Namespace
 def get_cli_args() -> Namespace:
     parser = ArgumentParser(description="Morphologically profile a WSI")
     parser.add_argument("--image", help="path to TIFF to analyse", type=str, required=True)
+    parser.add_argument("--stain-type", help="Stain type", choices=["HE", "IHC"], type=str, required=True)
 
     convert_parser = parser.add_argument_group("Convert TIFF to Zarr")
     convert_parser.add_argument(

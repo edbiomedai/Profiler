@@ -15,4 +15,5 @@ source activate ../../Profiler/env/
 export file=$(find . -maxdepth 1 -type f | sed -n ''$SGE_TASK_ID' p')
 
 python -m profiler \
-    --image $file
+    --image $file \
+    --stain-type IHC

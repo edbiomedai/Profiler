@@ -17,7 +17,11 @@ def deconvolve_image(args: Namespace, logger: Logger, paths: dict, benchmarks: d
     out_zarr = os.path.join(out_dir, "img.zarr")
     out_meta = os.path.join(out_dir, "meta.json")
     raw_image = read_zarr_ubimg(norm_zarr, norm_meta)
-    nskid = NativeSKImageStainDeconvolver(stain_type='H&E')
+    if args.stain_type == "IHC":
+        stain_type = "IHC"
+    else:
+        stain_type ='H&E'
+    nskid = NativeSKImageStainDeconvolver(stain_type=stain_type)
     start_time = time()
     deconv_image = nskid.run(raw_image)
     deconv_image.save(out_zarr, out_meta)
