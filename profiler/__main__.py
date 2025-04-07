@@ -1,3 +1,4 @@
+from .analyse._apply_qc import apply_qc
 from .analyse._convert_tiff_to_zarr import convert_tiff_to_zarr
 from .analyse._create_qc_mask import create_qc_mask
 from .analyse._deconvolve_image import deconvolve_image
@@ -51,17 +52,21 @@ def main() -> None:
     rmtree(paths["mask_nuc"])
     create_qc_mask(args, logger, paths, benchmarks)
     rmtree(paths["mask_tissue"])
+    apply_qc(args, logger, paths, benchmarks)
+    rmtree(paths["mask_qc"])
     
     merge_data(args, logger, paths, benchmarks)
     rmtree(paths["data_staged"])
     
+    logger.info("STARTED: Export Metadata")
     end_time = time()
     elapsed_time = end_time - start_time
     benchmarks["whole_workflow"] = elapsed_time
     benchmarks_out_dir = os.path.join(paths["benchmarks"], os.path.basename(args.image) + ".csv")
-    pd.DataFrame(benchmarks).to_csv(benchmarks_out_dir, index=False)
+    pd.DataFrame(benchmarks, index=[0]).to_csv(benchmarks_out_dir, index=False)
     metadata_out_dir = os.path.join(paths["metadata"], os.path.basename(args.image) + ".csv")
-    pd.DataFrame(metadata).to_csv(metadata_out_dir, index=False)
+    pd.DataFrame(metadata, index=[0]).to_csv(metadata_out_dir, index=False)
+    logger.info("COMPLETED: Export Metadata")
 
 if __name__ == "__main__":
     main()

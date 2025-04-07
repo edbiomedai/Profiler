@@ -3,7 +3,7 @@
 #$ -pe sharedmem 8
 #$ -cwd
 #$ -l h_vmem=12G
-#$ -l h_rt=24:00:00
+#$ -l h_rt=48:00:00
 #$ -o ./sumbmission_logs/
 #$ -e ./sumbmission_logs/
 

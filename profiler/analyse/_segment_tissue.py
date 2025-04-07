@@ -44,7 +44,7 @@ def segment_tissue(args: Namespace, logger: Logger, paths: dict, benchmarks: dic
     out_meta = os.path.join(out_dir, "meta.json")
     raw_image = read_zarr_ubimg(norm_zarr, norm_meta)
     preproc = Processor([RGBToGrey(), GammaContrast(5)])
-    postproc = Processor([Downsample(), BinaryClosing(2), BinaryOpening(2), Upsample()])
+    postproc = Processor([Downsample(), BinaryClosing(3), BinaryOpening(8), Upsample()])
     start_time = time()
     otsu_thresholder = OtsuThresholder(preprocessor = preproc, postprocessor = postproc)
     otsu_thresholder.fit(raw_image)
