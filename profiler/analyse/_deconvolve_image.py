@@ -18,7 +18,7 @@ def deconvolve_image(args: Namespace, logger: Logger, paths: dict, benchmarks: d
     out_meta = os.path.join(out_dir, "meta.json")
     raw_image = read_zarr_ubimg(norm_zarr, norm_meta)
     if args.stain_type == "IHC":
-        stain_type = "IHC"
+        stain_type = "H-DAB"
     else:
         stain_type ='H&E'
     nskid = NativeSKImageStainDeconvolver(stain_type=stain_type)
