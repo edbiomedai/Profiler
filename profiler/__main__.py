@@ -1,4 +1,5 @@
 from .analyse._apply_qc import apply_qc
+from .analyse._calculate_spatial import calculate_spatial
 from .analyse._convert_tiff_to_zarr import convert_tiff_to_zarr
 from .analyse._create_qc_mask import create_qc_mask
 from .analyse._deconvolve_image import deconvolve_image
@@ -51,6 +52,7 @@ def main() -> None:
     rmtree(paths["mask_cyto"])
     rmtree(paths["mask_nuc"])
     create_qc_mask(args, logger, paths, benchmarks)
+    calculate_spatial(args, logger, paths, benchmarks)
     rmtree(paths["mask_tissue"])
     apply_qc(args, logger, paths, benchmarks)
     rmtree(paths["mask_qc"])
