@@ -15,7 +15,7 @@ def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd
     y_diff = coords[:, None, 1] - coords[None, :, 1]
     dist_mat = da.less_equal(da.sqrt(x_diff ** 2 + y_diff ** 2), distance_threshold).astype(int)
     dist_mat[da.eye(dist_mat.shape[0], dtype=bool)] = 0
-    data[out_var] = dist_mat.sum(axis=1).to_dask_dataframe().repartition(npartitions=data.npartition)
+    data[out_var] = dist_mat.sum(axis=1).to_dask_dataframe().repartition(npartitions=data.npartitions)
     return data[["Meta_Global_Mask_Label", out_var]]
 
 def calculate_local_means(df: dd.DataFrame, variable_name: str, distance_threshold: int = 25) -> dd.DataFrame:
@@ -32,8 +32,8 @@ def calculate_local_means(df: dd.DataFrame, variable_name: str, distance_thresho
     count_mat = da.where(count_mat < 1, 1, count_mat)
     avg_mat = sum_mat / count_mat
     out_var = f"Spatial_Nuclei_Mask_LocalAverage{variable_name.replace("_", "")}{distance_threshold}"
-    data[out_var] = avg_mat.to_dask_dataframe().repartition(npartitions=data.npartition)
-    return data[["Meta_Globa_Mask_Label", out_var]]
+    data[out_var] = avg_mat.to_dask_dataframe().repartition(npartitions=data.npartitions)
+    return data[["Meta_Global_Mask_Label", out_var]]
 
 
 def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: dict):
@@ -42,12 +42,10 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     mpdata_path = os.path.join(paths["data_staged"], "areashape.csv")
     indata_path = os.path.join(paths["data_staged"], "intensity.csv")
     out_dir = os.path.join(paths["data_staged"], "spatial.csv")
-    mpdata = pd.read_csv(mpdata_path)
-    indata = pd.read_csv(indata_path)
+    mpdata = dd.read_csv(mpdata_path)
+    indata = dd.read_csv(indata_path)
     data = dd.from_pandas(pd.merge(mpdata, indata, how="left", on="Meta_Global_Mask_Label"))
-    float_cols = data.select_dtypes(include='float').columns
-    data[float_cols] = data[float_cols].astype('float32')
-    spatial_df = calculate_local_counts(data).compute()
+    spatial_df = calculate_local_counts(data)
     other_dfs = [
         calculate_local_means(data, "AreaShape_Nuclei_Mask_Area"),
         calculate_local_means(data, "AreaShape_Nuclei_Mask_Eccentricity"),
@@ -57,8 +55,8 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     if args.stain_type == "IHC":
         other_dfs.append(calculate_local_means(data, "Intensity_Cytoplasm_DAB_MeanIntensity"))
     for df in other_dfs:
-        spatial_df = pd.merge(spatial_df, df.compute(), how="left", on="Meta_Global_Mask_Label")
-    spatial_df.to_csv(out_dir, index=False)
+        spatial_df = pd.merge(spatial_df, df, how="left", on="Meta_Global_Mask_Label")
+    spatial_df.to_csv(out_dir, index=False, single_file=True)
     end_time = time()
     benchmarks["spatial_calcs"] = end_time - start_time
     logger.info("COMPLETED: Calculating spatial data")
