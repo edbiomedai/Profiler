@@ -42,8 +42,8 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     mpdata_path = os.path.join(paths["data_staged"], "areashape.csv")
     indata_path = os.path.join(paths["data_staged"], "intensity.csv")
     out_dir = os.path.join(paths["data_staged"], "spatial.csv")
-    mpdata = dd.read_csv(mpdata_path).repartition(npartitions=100)
-    indata = dd.read_csv(indata_path).repartition(npartitions=100)
+    mpdata = pd.read_csv(mpdata_path)
+    indata = pd.read_csv(indata_path)
     data = dd.from_pandas(pd.merge(mpdata, indata, how="left", on="Meta_Global_Mask_Label"))
     float_cols = data.select_dtypes(include='float').columns
     data[float_cols] = data[float_cols].astype('float32')
