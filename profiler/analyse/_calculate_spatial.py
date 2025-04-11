@@ -44,7 +44,7 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     out_dir = os.path.join(paths["data_staged"], "spatial.csv")
     mpdata = dd.read_csv(mpdata_path)
     indata = dd.read_csv(indata_path)
-    data = dd.from_pandas(pd.merge(mpdata, indata, how="left", on="Meta_Global_Mask_Label"))
+    data = dd.merge(mpdata, indata, how="left", on="Meta_Global_Mask_Label")
     spatial_df = calculate_local_counts(data)
     other_dfs = [
         calculate_local_means(data, "AreaShape_Nuclei_Mask_Area"),
@@ -55,7 +55,7 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     if args.stain_type == "IHC":
         other_dfs.append(calculate_local_means(data, "Intensity_Cytoplasm_DAB_MeanIntensity"))
     for df in other_dfs:
-        spatial_df = pd.merge(spatial_df, df, how="left", on="Meta_Global_Mask_Label")
+        spatial_df = dd.merge(spatial_df, df, how="left", on="Meta_Global_Mask_Label")
     spatial_df.to_csv(out_dir, index=False, single_file=True)
     end_time = time()
     benchmarks["spatial_calcs"] = end_time - start_time
