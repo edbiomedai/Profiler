@@ -45,18 +45,13 @@ def calculate_spatial(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     mpdata = dd.read_csv(mpdata_path)
     indata = dd.read_csv(indata_path)
     data = dd.merge(mpdata, indata, how="left", on="Meta_Global_Mask_Label")
-    spatial_df = calculate_local_counts(data)
-    other_dfs = [
-        calculate_local_means(data, "AreaShape_Nuclei_Mask_Area"),
-        calculate_local_means(data, "AreaShape_Nuclei_Mask_Eccentricity"),
-        calculate_local_means(data, "AreaShape_Nuclei_Mask_AxisMinorLength"),
-        calculate_local_means(data, "AreaShape_Cell_Mask_Area")
-    ]
+    calculate_local_counts(data).to_csv("spatial1.csv")
+    calculate_local_means(data, "AreaShape_Nuclei_Mask_Area").to_csv("spatial2.csv")
+    calculate_local_means(data, "AreaShape_Nuclei_Mask_Eccentricity").to_csv("spatial3.csv")
+    calculate_local_means(data, "AreaShape_Nuclei_Mask_AxisMinorLength").to_csv("spatial4.csv")
+    calculate_local_means(data, "AreaShape_Cell_Mask_Area").to_csv("spatial5.csv")
     if args.stain_type == "IHC":
-        other_dfs.append(calculate_local_means(data, "Intensity_Cytoplasm_DAB_MeanIntensity"))
-    for df in other_dfs:
-        spatial_df = dd.merge(spatial_df, df, how="left", on="Meta_Global_Mask_Label")
-    spatial_df.to_csv(out_dir, index=False, single_file=True)
+        calculate_local_means(data, "Intensity_Cytoplasm_DAB_MeanIntensity").to_csv("spatial6.csv")
     end_time = time()
     benchmarks["spatial_calcs"] = end_time - start_time
     logger.info("COMPLETED: Calculating spatial data")
