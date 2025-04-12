@@ -1,8 +1,8 @@
 #!/bin/bash
 #$ -N ExtractMorphology
-#$ -pe sharedmem 4
+#$ -pe sharedmem 8
 #$ -cwd
-#$ -l h_vmem=24G
+#$ -l h_vmem=12G
 #$ -l h_rt=24:00:00
 #$ -o ./sumbmission_logs/
 #$ -e ./sumbmission_logs/
