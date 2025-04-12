@@ -10,7 +10,7 @@ def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd
     out_var = f"Spatial_Nuclei_Mask_LocalCount{distance_threshold}"
     data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidY", "Meta_Nuclei_Mask_CentroidY"]]
     coords = data[["Meta_Nuclei_Mask_CentroidY", "Meta_Nuclei_Mask_CentroidY"]].to_dask_array(lengths = True)
-    coords = coords.rechunk((4096, 2))
+    coords = coords.rechunk((2048, 2))
     x_diff = coords[:, None, 0] - coords[None, :, 0]
     y_diff = coords[:, None, 1] - coords[None, :, 1]
     dist_mat = da.less_equal(da.sqrt(x_diff ** 2 + y_diff ** 2), distance_threshold).astype(int)
@@ -21,7 +21,7 @@ def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd
 def calculate_local_means(df: dd.DataFrame, variable_name: str, distance_threshold: int = 25) -> dd.DataFrame:
     data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidY", "Meta_Nuclei_Mask_CentroidY", variable_name]]
     coords = data[["Meta_Nuclei_Mask_CentroidY", "Meta_Nuclei_Mask_CentroidY"]].to_dask_array(lengths = True)
-    coords = coords.rechunk((4096, 2))
+    coords = coords.rechunk((2048, 2))
     x_diff = coords[:, None, 0] - coords[None, :, 0]
     y_diff = coords[:, None, 1] - coords[None, :, 1]
     dist_mat = da.less_equal(da.sqrt(x_diff ** 2 + y_diff ** 2), distance_threshold).astype(int)
