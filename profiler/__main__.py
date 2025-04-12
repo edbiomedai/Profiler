@@ -58,7 +58,7 @@ def main() -> None:
     rmtree(paths["mask_qc"])
     
     merge_data(args, logger, paths, benchmarks)
-    rmtree(paths["data_staged"])
+    #rmtree(paths["data_staged"])
     
     logger.info("STARTED: Export Metadata")
     end_time = time()
