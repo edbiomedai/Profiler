@@ -2,7 +2,7 @@ import dask.array as da
 import dask.dataframe as dd
 import pandas as pd
 
-def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> pd.DataFrame:
+def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd.DataFrame:
     out_var = f"Spatial_Nuclei_Mask_LocalCount{distance_threshold}"
     data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]]
     coords = data[["Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]].to_dask_array(lengths = True)
@@ -11,10 +11,10 @@ def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> pd
     y_diff = coords[:, None, 1] - coords[None, :, 1]
     dist_mat = da.less_equal(da.sqrt(x_diff ** 2 + y_diff ** 2), distance_threshold).astype(int)
     dist_mat[da.eye(dist_mat.shape[0], dtype=bool)] = 0
-    counts = dist_mat.sum(axis=1).compute()
-    return pd.DataFrame({"Meta_Global_Mask_Label": data["Meta_Global_Mask_Label"].compute(), out_var: counts})
+    counts = dd.from_dask_array(dist_mat.sum(axis=1), columns=out_var)
+    return counts
 
-def calculate_local_means(df: dd.DataFrame, var_name: str, distance_threshold: int = 25) -> pd.DataFrame:
+def calculate_local_means(df: dd.DataFrame, var_name: str, distance_threshold: int = 25) -> dd.DataFrame:
     out_var = f"Spatial_Nuclei_Mask_LocalAvg{var_name.replace("_", "")}{distance_threshold}"
     data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY", var_name]]
     coords = data[["Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]].to_dask_array(lengths = True)
@@ -30,4 +30,4 @@ def calculate_local_means(df: dd.DataFrame, var_name: str, distance_threshold: i
     counts = da.where(counts < 1, 1, counts)
     sums = val_mat.sum(axis=1)
     avgs = sums/counts
-    return pd.DataFrame({"Meta_Global_Mask_Label": data["Meta_Global_Mask_Label"].compute(), out_var: avgs.compute()})
+    return dd.from_dask_array(avgs, columns=out_var)
