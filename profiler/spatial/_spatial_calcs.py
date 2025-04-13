@@ -8,7 +8,7 @@ def save_dist_mat(df: dd.DataFrame, path: str) -> None:
     coords = coords.rechunk((2048, 2))
     x_diff = coords[:, None, 0] - coords[None, :, 0]
     y_diff = coords[:, None, 1] - coords[None, :, 1]
-    da.sqrt(x_diff ** 2 + y_diff ** 2).to_csv(path)
+    da.sqrt(x_diff ** 2 + y_diff ** 2).to_zarr(path)
 
 def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd.DataFrame:
     out_var = f"Spatial_Nuclei_Mask_LocalCount{distance_threshold}"
