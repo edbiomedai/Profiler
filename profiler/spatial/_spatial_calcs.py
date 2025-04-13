@@ -2,6 +2,14 @@ import dask.array as da
 import dask.dataframe as dd
 import pandas as pd
 
+def save_dist_mat(df: dd.DataFrame, path: str) -> None:
+    data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]]
+    coords = data[["Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]].to_dask_array(lengths = True)
+    coords = coords.rechunk((2048, 2))
+    x_diff = coords[:, None, 0] - coords[None, :, 0]
+    y_diff = coords[:, None, 1] - coords[None, :, 1]
+    da.sqrt(x_diff ** 2 + y_diff ** 2).to_csv(path)
+
 def calculate_local_counts(df: dd.DataFrame, distance_threshold: int = 25) -> dd.DataFrame:
     out_var = f"Spatial_Nuclei_Mask_LocalCount{distance_threshold}"
     data = df[["Meta_Global_Mask_Label", "Meta_Nuclei_Mask_CentroidX", "Meta_Nuclei_Mask_CentroidY"]]
