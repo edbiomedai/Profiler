@@ -11,7 +11,7 @@ def save_dist_mat(df: dd.DataFrame, path: str, distance_threshold: int = 100) ->
     dist_mat = da.sqrt(x_diff ** 2 + y_diff ** 2)
     threshold_dist_mat = da.less_equal(dist_mat, distance_threshold)
     threshold_dist_mat[da.eye(threshold_dist_mat.shape[0], dtype=bool)] = False
-    threshold_dist_mat.to_zarr(path)
+    threshold_dist_mat.rechunk((2048, 2048)).to_zarr(path)
 
 def calculate_local_counts(dist_mat: da.Array, distance_threshold: int = 25) -> dd.DataFrame:
     out_var = f"Spatial_Nuclei_Mask_LocalCount{distance_threshold}"
