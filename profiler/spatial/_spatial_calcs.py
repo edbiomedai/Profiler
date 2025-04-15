@@ -25,7 +25,7 @@ def calculate_local_means(df: pd.DataFrame, path: str, feature_name: str, distan
     counts = np.where(counts < 1, 1, counts)
     val_mat = np.array(df[feature_name].values)
     val_mat = np.tile(val_mat, (val_mat.shape[0], 1))
-    sum_mat = dist_mat * val_mat
+    sum_mat = thresh_dist_mat * val_mat
     sums = sum_mat.sum(axis=1)
     out_df = pd.DataFrame({"Meta_Global_Mask_Label": df["Meta_Global_Mask_Label"], out_var: sums/counts, 'InRegion': df["InRegion"]})
     out_df = out_df[out_df["InRegion"]]
