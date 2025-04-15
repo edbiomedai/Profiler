@@ -1,4 +1,4 @@
-from ._spatial_calcs import calculate_local_counts
+from ._spatial_calcs import calculate_local_counts, calculate_local_means
 from ._spatial_window import create_spatial_windows
 
 from argparse import ArgumentParser, Namespace
@@ -46,6 +46,8 @@ if __name__=="__main__":
     os.mkdir(local_counts_path_150)
     os.mkdir(local_counts_path_175)
     os.mkdir(local_counts_path_200)
+    local_means1_path_25 = os.path.join(spatial_temp_path, "local_means_1_25")
+    os.mkdir(local_means1_path_25)
     spatial_window_dfs = [pd.read_csv(path) for path in glob(os.path.join(spatial_windows_path, "*.csv"))]
     for i, window in enumerate(spatial_window_dfs):
         calculate_local_counts(window, os.path.join(local_counts_path_25, f"local_counts{i}.csv"), distance_threshold=25)
@@ -56,6 +58,8 @@ if __name__=="__main__":
         calculate_local_counts(window, os.path.join(local_counts_path_150, f"local_counts{i}.csv"), distance_threshold=150)
         calculate_local_counts(window, os.path.join(local_counts_path_175, f"local_counts{i}.csv"), distance_threshold=175)
         calculate_local_counts(window, os.path.join(local_counts_path_200, f"local_counts{i}.csv"), distance_threshold=200)
+        
+        calculate_local_means(window, os.path.join(local_means1_path_25, f"local_counts{i}.csv"), feature_name="AreaShape_Nuclei_Mask_Area", distance_threshold=25)
     concat_dfs(local_counts_path_25, os.path.join(spatial_temp_path, "local_counts_25.csv"))
     concat_dfs(local_counts_path_50, os.path.join(spatial_temp_path, "local_counts_50.csv"))
     concat_dfs(local_counts_path_75, os.path.join(spatial_temp_path, "local_counts_75.csv"))
@@ -64,6 +68,7 @@ if __name__=="__main__":
     concat_dfs(local_counts_path_150, os.path.join(spatial_temp_path, "local_counts_150.csv"))
     concat_dfs(local_counts_path_175, os.path.join(spatial_temp_path, "local_counts_175.csv"))
     concat_dfs(local_counts_path_200, os.path.join(spatial_temp_path, "local_counts_200.csv"))
+    concat_dfs(local_means1_path_25, os.path.join(spatial_temp_path, "local_means1_25.csv"))
     spatial_dfs = glob(os.path.join(spatial_temp_path, "*.csv"))
     spatial_dfs = [pd.read_csv(path) for path in spatial_dfs]
     out_df = reduce(lambda left, right: pd.merge(left, right, on="Meta_Global_Mask_Label", how='left'), spatial_dfs)
