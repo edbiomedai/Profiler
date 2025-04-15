@@ -1,10 +1,8 @@
-from ._spatial_calcs import calculate_local_counts, calculate_local_means, save_dist_mat
+from ._spatial_window import create_spatial_windows
 
 from argparse import ArgumentParser, Namespace
 import dask.dataframe as dd
-from functools import reduce
 from glob import glob
-import pandas as pd
 from pathlib import Path
 import os
 from shutil import rmtree
@@ -17,10 +15,10 @@ def get_cli_args() -> Namespace:
 if __name__=="__main__":
     args = get_cli_args()
     full_path = str(Path(args.input_folder).resolve())
-    out_folder = os.path.join(full_path, "spatialstaged")
-    out_dist_mat = os.path.join(out_folder, "dist_mat")
-    os.mkdir(out_folder)
-    data_file_path = os.path.join(full_path, "morphology.csv")
-    data = dd.read_csv(data_file_path)
-    save_dist_mat(data, out_dist_mat)
-
+    spatial_temp_path = os.path.join(full_path, "spatial_temp")
+    spatial_windows_path = os.path.join(spatial_temp_path, "spatial_windows")
+    local_counts_path = os.path.join(spatial_temp_path, "local_counts")
+    data = dd.read_csv(os.path.join(full_path, "morphology.csv"))
+    create_spatial_windows(data, spatial_windows_path)
+    for i, spatial_window in enumerate(glob(os.path.join(spatial_windows_path, "*.csv"))):
+        pass
