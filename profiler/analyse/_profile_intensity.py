@@ -20,7 +20,7 @@ def profile_intensity(args: Namespace, logger: Logger, paths: dict, benchmarks: 
     cyto_zarr = os.path.join(cyto_dir, "img.zarr")
     cyto_meta = os.path.join(cyto_dir, "meta.json")
     out_dir = os.path.join(paths["data_staged"], "intensity.csv")
-    deconv_image = read_zarr_ubimg(deconv_zarr, deconv_meta, channel_names=["Hematoxylin", "DAB"])
+    deconv_image = read_zarr_ubimg(deconv_zarr, deconv_meta, channel_names=["Hematoxylin", "Secondary"])
     nuc_mask = read_zarr_lbl_mask(nuc_zarr, nuc_meta, mask_name="Nuclei")
     cell_mask = read_zarr_lbl_mask(cell_zarr, cell_meta, mask_name="Cell")
     cyto_mask = read_zarr_lbl_mask(cyto_zarr, cyto_meta, mask_name="Cytoplasm")
