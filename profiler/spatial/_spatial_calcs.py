@@ -23,7 +23,7 @@ def calculate_local_means(df: pd.DataFrame, path: str, feature_name: str, distan
     np.fill_diagonal(thresh_dist_mat, False)
     counts = thresh_dist_mat.astype(int).sum(axis=1)
     counts = np.where(counts < 1, 1, counts)
-    val_mat = np.array(df["feature_name"].values)
+    val_mat = np.array(df[feature_name].values)
     val_mat = np.tile(val_mat, (val_mat.shape[0], 1))
     sum_mat = dist_mat * val_mat
     sums = sum_mat.sum(axis=1)
