@@ -13,7 +13,7 @@ KEEP_COLS = [
     "Intensity_Cytoplasm_Secondary_MedianIntensity"
 ]
 
-def create_spatial_windows(df: dd.DataFrame, path: str, window_size: int = 3000, overlap: int = 200) -> None:
+def create_spatial_windows(df: dd.DataFrame, path: str, window_size:  int = 3000, overlap: int = 400) -> None:
     path = str(Path(path).resolve())
     ymax = int(df["Meta_Nuclei_Mask_CentroidY"].max().compute()) + 1
     xmax = int(df["Meta_Nuclei_Mask_CentroidX"].max().compute()) + 1
