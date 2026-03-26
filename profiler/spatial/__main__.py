@@ -29,6 +29,9 @@ if __name__=="__main__":
     spatial_windows_path = os.path.join(spatial_temp_path, "spatial_windows")
     os.mkdir(spatial_windows_path)
     data = dd.read_csv(os.path.join(full_path, "morphology.csv"))
+    data = data[data["QC_Global_Mask_SegVal"] != 0]
+    data = data[data["AreaShape_Nuclei_Mask_Area"] > 20]
+    data = data[data["AreaShape_Nuclei_Mask_Area"] < 400]
     create_spatial_windows(data, spatial_windows_path)
     local_counts_path_25 = os.path.join(spatial_temp_path, "local_counts_25")
     local_counts_path_50 = os.path.join(spatial_temp_path, "local_counts_50")
