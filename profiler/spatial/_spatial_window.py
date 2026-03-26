@@ -11,7 +11,7 @@ KEEP_COLS = [
     "AreaShape_Nuclei_Mask_Eccentricity",
     "Intensity_Cytoplasm_Secondary_MeanIntensity",
     "Intensity_Cytoplasm_Secondary_MedianIntensity",
-    "AreaShape_Cytoplasm_Mask_Perimeter"
+    "AreaShape_Nuclei_Mask_Perimeter"
 ]
 
 def create_spatial_windows(df: dd.DataFrame, path: str, window_size:  int = 3000, overlap: int = 400) -> None:
